@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>EvDateEnd__c</fullName>
+    <externalId>false</externalId>
+    <formula>MID(TEXT(Custom_Event__r.Date__c  + (Custom_Event__r.Duration_Add__c/1440)), 0, 4) &amp;
+MID(TEXT(Custom_Event__r.Date__c  + (Custom_Event__r.Duration_Add__c/1440)), 6, 2) &amp;
+MID(TEXT(Custom_Event__r.Date__c  + (Custom_Event__r.Duration_Add__c/1440) ), 9, 2) &amp; &quot;T&quot; &amp;
+LPAD(TEXT(HOUR(TIMEVALUE(Custom_Event__r.Date__c + (Custom_Event__r.Duration_Add__c/1440)))),2,&quot;0&quot;) &amp;
+LPAD(TEXT(MINUTE(TIMEVALUE(Custom_Event__r.Date__c + (Custom_Event__r.Duration_Add__c/1440)))),2,&quot;0&quot;) &amp;
+LPAD(TEXT(SECOND(TIMEVALUE(Custom_Event__r.Date__c + (Custom_Event__r.Duration_Add__c/1440)))),2,&quot;0&quot;)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>EvDateEnd</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

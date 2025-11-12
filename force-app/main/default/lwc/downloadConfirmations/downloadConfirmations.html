@@ -1,0 +1,9 @@
+<template>
+    <lightning-card>
+        <div class="slds-p-around_medium">
+            <lightning-combobox class="slds-p-bottom_small" label="Download the registered or attended users"
+                options={options} value={selectedOption} onchange={handleOption}></lightning-combobox>
+            <lightning-button class="redButton slds-button slds-button_brand" label="Download" variant="brand" onclick={handleDownload}></lightning-button>
+        </div>
+    </lightning-card>
+</template>

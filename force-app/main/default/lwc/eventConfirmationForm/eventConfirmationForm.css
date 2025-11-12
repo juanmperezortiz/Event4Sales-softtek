@@ -1,0 +1,47 @@
+/* .disabledButton{
+    --sds-c-button-brand-color-background: #D9D7D5;
+    --sds-c-button-brand-color-border: #D9D7D5;
+    --sds-c-button-brand-color-background-hover: #D9D7D5;
+    --sds-c-button-brand-color-border-hover: #D9D7D5;
+    --sds-c-button-brand-color-background-active: #D9D7D5;
+    --sds-c-button-brand-color-border-active: #D9D7D5;
+} */
+
+.timezone{
+    display: inline;
+}
+
+.eventTitle{
+    font-size: 28px;
+    font-weight: 300;
+}
+.inputTitle{
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.infoTitle{
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.buttonDiv{
+    width: 100%;
+}
+
+.textFont, body{
+    font-family: Arial, Georgia;
+}
+
+.logo{
+    min-width: 1.5in;
+    width: 15vw;
+    padding: 0 2rem;
+    margin-bottom: 1rem;
+}
+
+@media only screen and(max-width: 480px){
+    .logo{
+        padding: 0 1rem;
+    }
+}

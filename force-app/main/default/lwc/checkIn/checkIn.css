@@ -1,0 +1,21 @@
+.buttonDiv{
+    width: 100%;
+}
+
+.eventTitle{
+    font-size: 28px;
+    font-weight: 300;
+}
+
+.logo{
+    min-width: 1.5in;
+    width: 15vw;
+    padding: 0 2rem;
+    margin-bottom: 1rem;
+}
+
+@media only screen and(max-width: 480px){
+    .logo{
+        padding: 0 1rem;
+    }
+}

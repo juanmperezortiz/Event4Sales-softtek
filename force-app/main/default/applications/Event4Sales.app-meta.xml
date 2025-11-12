@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomApplication xmlns="http://soap.sforce.com/2006/04/metadata">
+    <brand>
+        <headerColor>#A972E4</headerColor>
+        <shouldOverrideOrgTheme>false</shouldOverrideOrgTheme>
+    </brand>
+    <description>Event4Sales modules</description>
+    <formFactors>Small</formFactors>
+    <formFactors>Large</formFactors>
+    <isNavAutoTempTabsDisabled>false</isNavAutoTempTabsDisabled>
+    <isNavPersonalizationDisabled>true</isNavPersonalizationDisabled>
+    <isNavTabPersistenceDisabled>false</isNavTabPersistenceDisabled>
+    <isOmniPinnedViewEnabled>false</isOmniPinnedViewEnabled>
+    <label>Event4Sales</label>
+    <navType>Standard</navType>
+    <tabs>Custom_Event__c</tabs>
+    <tabs>Event_Confirmation__c</tabs>
+    <tabs>Event_Question__c</tabs>
+    <tabs>Event4Sales_Panel</tabs>
+    <uiType>Lightning</uiType>
+    <utilityBar>Event4Sales_UtilityBar</utilityBar>
+</CustomApplication>

@@ -1,0 +1,38 @@
+<template>
+    <lightning-card>
+        <div lwc:if={showForm} class="slds-grid slds-grid_align-center">
+            <div class="slds-col slds-size_1-of-3">
+                <lightning-input type="Text" label="Insert your check-in code" onchange={handleCode} maxlength="6" message-when-too-long="Code too long. Check again your code"></lightning-input>
+                <div class="buttonDiv">
+                    <lightning-button class="slds-button slds-button_brand slds-button_stretch" label="Check In" variant="brand"
+                        onclick={handleCheckIn}></lightning-button>
+                </div>
+            </div>
+        </div>
+        <div lwc:if={alreadyCheckIn}>
+            <div class="roundBorder slds-align_absolute-center">
+                <lightning-icon class="" icon-name="action:approval" size="large"></lightning-icon>
+            </div>
+            <h3 class="slds-p-bottom_small slds-p-top_small eventTitle slds-align_absolute-center">Meeting Check In
+                Confirmed</h3>
+            <div class="slds-align_absolute-center slds-p-around_small">{confirmText}</div>
+        </div>
+        <div lwc:if={checkInClosed}>
+            <div class="roundBorder slds-align_absolute-center">
+                <lightning-icon class="" icon-name="action:close" size="large"></lightning-icon>
+            </div>
+            <h3 class="slds-p-bottom_small slds-p-top_small eventTitle slds-align_absolute-center">Check In Closed</h3>
+            <div class="slds-align_absolute-center slds-p-around_small">{errorMessage} <lightning-formatted-date-time class="slds-p-left_small slds-p-right_small" value={checkInDate} year="numeric" 
+                month="short" day="2-digit" hour="2-digit" minute="2-digit" hour12="false">
+            </lightning-formatted-date-time>
+            <div class="timezone">{data.Custom_Event__r.Timezone__c}</div></div>
+        </div>
+        <div lwc:if={noCheckinFound}>
+            <div class="slds-align_absolute-center">
+                <lightning-icon class="" icon-name="action:close" size="large"></lightning-icon>
+            </div>
+            <h3 class="slds-p-bottom_small slds-p-top_small eventTitle slds-align_absolute-center">Check in not found</h3>
+            <div class="slds-align_absolute-center slds-p-around_small">Sorry, we can not found the Check in.</div>
+        </div>
+    </lightning-card>
+</template>

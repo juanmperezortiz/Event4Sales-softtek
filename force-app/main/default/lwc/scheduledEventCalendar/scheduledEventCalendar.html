@@ -1,0 +1,112 @@
+<!--
+  @description       : 
+  @author            : Eduardo Hernandez
+  @group             : 
+  @last modified on  : 06-07-2023
+  @last modified by  : Eduardo Hernandez
+-->
+<template>
+    <div class="slds-brand-band slds-brand-band_large">
+        <div class="slds-card slds-p-around_medium">
+            <template lwc:if={customevent.data}>
+                <template lwc:if={isLoading}>
+                    <lightning-spinner alternative-text="Loading" size="large"></lightning-spinner>
+                </template>
+                <div class="slds-page-header">
+                    <div class="slds-page-header__row">
+                    <div class="slds-page-header__col-title">
+                        <div class="slds-media">
+                        <div class="slds-media__figure">
+                            <span class="slds-icon_container slds-icon-standard-opportunity" title="opportunity">
+                                <lightning-icon icon-name="standard:date_time" alternative-text={label.header} title={label.header} ></lightning-icon>
+                            </span>
+                        </div>
+                        <div class="slds-media__body">
+                            <div class="slds-page-header__name">
+                            <div class="slds-page-header__name-title">
+                                <h1>
+                                <span class="slds-page-header__title slds-truncate" title={label.header}>{label.header}</span>
+                                </h1>
+                            </div>
+                            </div>
+                            <p class="slds-page-header__name-meta">{statusStr}</p>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+
+                <template if:true={isActive}>
+                    <div class="slds-page-header__row">
+                        <div class="slds-page-header__col-title">
+                            <div class="slds-media__body">
+                                <div class="slds-page-header__name">
+                                <div class="slds-page-header__name-title">
+                                    <h2>
+                                        <span class="slds-text-heading_medium slds-text-title_bold" title={label.eventDateTime}>{label.eventDateTime}</span>
+                                    </h2>
+                                </div>
+                                </div>
+                                <h3>
+                                    <span class="slds-text-heading_small">{initDatavalues.dateEventDay} {initDatavalues.hourEvent} - {initDatavalues.eventTimeZone}</span>
+                                </h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="slds-page-header__row slds-p-top_medium">
+                        <div class="slds-page-header__col-title">
+                            <div class="slds-media__body">
+                                <div class="slds-page-header__name">
+                                <div class="slds-page-header__name-title">
+                                    <h2>
+                                        <span class="slds-text-heading_medium slds-text-title_bold" title={label.eventDateTimeUser}>{label.eventDateTimeUser}</span>
+                                    </h2>
+                                </div>
+                                </div>
+                                <h3>
+                                    <span class="slds-text-heading_small">{initDatavalues.dateEventDayUser} {initDatavalues.hourEventUser} - {initDatavalues.eventTimeZoneUser}</span>
+                                </h3>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+                <template if:true={isInactive}>
+                    <div class="slds-form-element">
+                        <div class="slds-form-element__control">
+                            <lightning-input type="datetime" name="input2" label={label.timeinput} onchange={evaluteChange} value={currentDatetime}></lightning-input>
+                        </div>
+                    </div>
+                    <div class="slds-form-element">
+                        <div class="slds-form-element__control">
+                            <lightning-input label={label.timezone} type="search" onfocus={showPicklistOptions}
+                                onchange={search} value={selectedValue}>
+                            </lightning-input>
+                            <div if:true={searchResults} class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid"
+                                role="listbox">
+                                <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                                    <template for:each={searchResults} for:item="searchResult">
+                                        <li key={searchResult.key} data-value={searchResult.value} role="presentation"
+                                            onclick={selectSearchResult} class="slds-listbox__item">
+                                            <div class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small "
+                                                role="option">
+                                                <span class="slds-media__body">
+                                                    <span class="slds-truncate" title={searchResult.value}>
+                                                        {searchResult.value}
+                                                    </span>
+                                                </span>
+                                            </div>
+                                        </li>
+                                    </template>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-align_absolute-center" style="height:5rem">
+                        <lightning-button variant="brand" label={label.timeFirst} title={label.timeFirst} onclick={saverecord} class="slds-m-left_x-small"></lightning-button>
+                    </div>
+                </template>
+            </template>
+        </div>
+    </div>
+</template>

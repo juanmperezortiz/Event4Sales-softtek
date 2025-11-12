@@ -1,0 +1,36 @@
+<template>
+    <lightning-card>
+        <div>Select your invitees</div>
+        <div>
+            <lightning-pill-container items={pillList} onitemremove={handleItemRemove}></lightning-pill-container>
+        </div>
+        <div class="slds-grid">
+            <lightning-input class="slds-col slds-size_8-of-12" type="text" label="Enter the contact name" value={searchText}
+                onchange={handleSearchInput}></lightning-input>
+            <lightning-button class="slds-col slds-size_4-of-12 slds-p-top_large slds-p-left_small" label="Search" variant="brand" 
+                onclick={searchContactsHandler}></lightning-button>
+        </div>
+        <div lwc:if={contactList} class="slds-grid slds-wrap slds-gutters">
+            <div class="slds-col slds-size_1-of-12">Select</div>
+            <div class="slds-col slds-size_4-of-12">Name</div>
+            <div class="slds-col slds-size_4-of-12">Email</div>
+            <div class="slds-col slds-size_3-of-12">Phone</div>
+            <template for:each={contactList} for:item="contact">
+                <div class="slds-col slds-size_1-of-1 slds-grid" key={contact.Id}>
+                    <lightning-input class="slds-col slds-size_1-of-12" type="checkbox" data-id={contact.Id} onchange={handleCheckbox}></lightning-input>
+                    <div class="slds-col slds-size_4-of-12">{contact.Name}</div>
+                    <div class="slds-col slds-size_4-of-12">{contact.Email}</div>
+                    <div class="slds-col slds-size_3-of-12">{contact.Phone}</div>
+                </div>
+            </template>
+        </div>
+        <div class="slds-m-top_medium">
+            <lightning-button class="slds-p-around_small" label="Add Contacts" 
+                onclick={handleAddInvitees} variant="brand"></lightning-button>
+            <lightning-button class="slds-p-around_small" label="Create invitations" 
+                onclick={handleCreateInvitation} variant="brand"></lightning-button>
+            <lightning-button class="slds-p-around_small" label="Send Invitations" 
+                onclick={handleInvitations} variant="brand"></lightning-button>
+        </div>
+    </lightning-card>
+</template>

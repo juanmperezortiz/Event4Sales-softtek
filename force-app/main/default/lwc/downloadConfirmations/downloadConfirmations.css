@@ -1,0 +1,16 @@
+.redButton{
+    --sds-c-button-brand-color-background: #EE0000;
+    --sds-c-button-brand-color-border: #EE0000;
+    --sds-c-button-brand-color-background-hover: #EE0000;
+    --sds-c-button-brand-color-border-hover: #EE0000;
+    --sds-c-button-brand-color-background-active: #BF0404;
+    --sds-c-button-brand-color-border-active: #BF0404;
+    width: 100%;
+}
+
+.redButton:active{
+    --sds-c-button-brand-color-background: #BF0404;
+    --sds-c-button-brand-color-border: #BF0404;
+    --sds-c-button-brand-color-background-hover: #BF0404;
+    --sds-c-button-brand-color-border-hover: #BF0404;
+}

@@ -1,0 +1,58 @@
+/**
+ * @description       : Test Class
+ * @author            : Eduardo Hernandez
+ * @group             : Softtek
+ * @last modified on  : 11-11-2025
+ * @last modified by  : Eduardo Hernandez Cuamatzi
+**/
+@isTest
+public class ScheduledEventCalendar_Test {
+
+    final Static String EVENTNAME = 'Test Event';
+    @TestSetup
+    static void makeData() {
+        Event4Sales_PostInstallPackage postinstall = new Event4Sales_PostInstallPackage();
+        Test.testInstall(postinstall, null);
+        Test.testInstall(postinstall, new Version(1,0), true);
+        Custom_Event__c testEvent = new Custom_Event__c();
+        testEvent.Name = EVENTNAME;
+        testEvent.Address__c = 'Address';
+        testEvent.Duration__c = 60;
+        testEvent.Minutes_Or_Hours__c = 'Minutes';
+        testEvent.Host__c = UserInfo.getUserId();
+        insert testEvent;
+    }
+
+    @isTest
+    private static void findTimeZones() {
+        final Id eventId = [SELECT Id FROM Custom_Event__c WHERE Name =: EVENTNAME].Id;
+        Test.startTest();
+            final Map<String, Object> response = ScheduledEventCalendar_Ctrl.findTimeZones(eventId);
+            System.assertEquals((Boolean)response.get('isOk'), true);
+        Test.stopTest();
+    }
+
+    @isTest
+    private static void updateEvent() {
+        final Id eventId = [SELECT Id FROM Custom_Event__c WHERE Name = 'Test Event'].Id;
+        final Map<String, Object> response = ScheduledEventCalendar_Ctrl.findTimeZones(eventId);
+        System.debug('zone '+ response.get('timeZones'));
+        System.debug('zone '+ ((Map<String, String>)response.get('timeZones')).keySet());
+        final String timeZoneStr = '(GMT+00:00) Greenwich Mean Time (Africa/Abidjan)';
+        final String timeselect = String.valueOf(System.now().addDays(1));
+        Test.startTest();
+            Map<String, Object> updateEventResult = ScheduledEventCalendar_Ctrl.updateEvent(eventId, timeZoneStr, timeselect);
+        Test.stopTest();
+    }
+
+    @isTest
+    private static void initTimeZone() {
+        final Custom_Event__c eventRecor = [SELECT Id FROM Custom_Event__c WHERE Name = 'Test Event'];
+        eventRecor.Datetime_Selected__c = String.valueOf(System.now().addDays(1));
+        eventRecor.Time_ZoneStr__c = '(GMT+00:00) Greenwich Mean Time (Africa/Abidjan)';
+        update eventRecor;
+        Test.startTest();
+            Map<String, Object> updateEventResult = ScheduledEventCalendar_Ctrl.findTimeZones(eventRecor.Id);
+        Test.stopTest();
+    }
+}

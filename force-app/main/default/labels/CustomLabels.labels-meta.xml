@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomLabels xmlns="http://soap.sforce.com/2006/04/metadata">
+    <labels>
+        <fullName>Community_URL</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Community URL</shortDescription>
+        <value>https://softtek55-dev-ed.my.site.com/Event</value>
+    </labels>
+    <labels>
+        <fullName>eventConfirmation_downloadICS</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>download ICS</shortDescription>
+        <value>Add the event to your calendar</value>
+    </labels>
+    <labels>
+        <fullName>quoteAuto</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Automatic Quote</shortDescription>
+        <value>This is an automatically generated quote.</value>
+    </labels>
+    <labels>
+        <fullName>quoteManual</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Manual Quote</shortDescription>
+        <value>This is a manual quote.</value>
+    </labels>
+    <labels>
+        <fullName>scheduled_EventDateTimeUser</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>scheduled_EventDateTimeUser</shortDescription>
+        <value>Event day time in your zone</value>
+    </labels>
+    <labels>
+        <fullName>scheduled_Headertitle</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>scheduled_Headertitle</shortDescription>
+        <value>Scheduled event</value>
+    </labels>
+    <labels>
+        <fullName>scheduled_TitleEventDay</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>scheduled_TitleEventDay</shortDescription>
+        <value>Event date time</value>
+    </labels>
+    <labels>
+        <fullName>scheduled_again</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>scheduled_again</shortDescription>
+        <value>Schedule again</value>
+    </labels>
+    <labels>
+        <fullName>scheduled_event</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>scheduled_event</shortDescription>
+        <value>Scheduled Event</value>
+    </labels>
+    <labels>
+        <fullName>scheduled_timeEvent</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>scheduled_timeEvent</shortDescription>
+        <value>Event time</value>
+    </labels>
+    <labels>
+        <fullName>scheduled_timeInput</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>scheduled_timeInput</shortDescription>
+        <value>Event date and time</value>
+    </labels>
+    <labels>
+        <fullName>scheduled_timeUser</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>scheduled_timeUser</shortDescription>
+        <value>Your time event</value>
+    </labels>
+    <labels>
+        <fullName>scheduled_timezone</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>scheduled_timezone</shortDescription>
+        <value>Time Zone</value>
+    </labels>
+</CustomLabels>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Seven_days_in_the_future</fullName>
+    <active>false</active>
+    <errorConditionFormula>DATEVALUE(Date__c) - TODAY() &lt; 7</errorConditionFormula>
+    <errorDisplayField>Date__c</errorDisplayField>
+    <errorMessage>The date must be al least 7 days in the future</errorMessage>
+</ValidationRule>

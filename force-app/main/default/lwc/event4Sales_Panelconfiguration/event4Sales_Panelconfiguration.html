@@ -1,0 +1,50 @@
+<!--
+  @description       : 
+  @author            : Eduardo Hernandez
+  @group             : 
+  @last modified on  : 09-05-2023
+  @last modified by  : Eduardo Hernandez
+-->
+<template>
+    <div class="slds-m-around_large">
+         <div if:true={isLoaded} class="slds-is-relative">
+            <lightning-spinner
+                alternative-text="Loading..." variant="brand">
+            </lightning-spinner>
+        </div>
+    </div>
+    <div class="slds-grid slds-gutters">
+        <div class="slds-col slds-size_1-of-6"></div>
+        <div class="slds-col slds-size_4-of-6">
+            <div class="slds-card">
+                <template if:true={hasdata}>
+                    <div class="slds-grid slds-wrap">
+                        <template for:each={configurations} for:item="customparam">
+                            <div class="slds-col slds-size_2-of-4" key={customparam.paramId}>
+                                <template if:true={customparam.isBoolean}>
+                                    <lightning-layout-item size="6">
+                                        <lightning-input type="toggle" label={customparam.paramLabel} value={customparam.booleanParam} data-typeparam="boolean" data-paramid={customparam.paramId} data-isinteger="false" data-isboolean="true" onchange={onchangeParam} checked={customparam.booleanParam}></lightning-input>
+                                    </lightning-layout-item>
+                                </template>
+                                <template if:true={customparam.isInteger}>
+                                    <lightning-layout-item size="3">
+                                        <lightning-input type="number" label={customparam.paramLabel} value={customparam.integerParam} data-typeparam="integer" data-paramid={customparam.paramId} data-isinteger="true" data-isboolean="false" onchange={onchangeParam}></lightning-input>
+                                    </lightning-layout-item>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+            </div>
+        </div>
+        <div class="slds-col slds-size_1-of-6"></div>
+    </div>
+    <div class="slds-grid slds-gutters">
+        <div class="slds-col slds-size_1-of-1">
+            <div class="slds-align_absolute-center">
+                <lightning-button icon-name="utility:clear" variant="destructive" label="Cancel" disabled={updatebutton} onclick={cancelupdate}></lightning-button>
+                <lightning-button icon-name="utility:success" class="slds-m-left_x-small" variant="success" label="Update" disabled={updatebutton} onclick={onSaveConfiguration}></lightning-button>
+            </div>
+        </div>
+    </div>
+</template>
