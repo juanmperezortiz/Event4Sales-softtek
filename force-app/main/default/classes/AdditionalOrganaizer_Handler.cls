@@ -9,7 +9,7 @@ public without sharing class AdditionalOrganaizer_Handler {
     
     /**
     * @description Notification to Host when a new Additional Organizer is added
-    * @author Eduardo Hernandez Cuamatzi | 11-11-2025 
+    * @author Eduardo Hernandez Cuamatzi | 11-11-2025
     * @param additionalOrganaizer Additional Organizer record
     **/
     public static void sendHostNotification(Additional_Organizer__c additionalOrganaizer) {
