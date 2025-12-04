@@ -28,7 +28,7 @@ public class ScheduledEventCalendar_Test {
         final Id eventId = [SELECT Id FROM Custom_Event__c WHERE Name =: EVENTNAME].Id;
         Test.startTest();
             final Map<String, Object> response = ScheduledEventCalendar_Ctrl.findTimeZones(eventId);
-            System.assertEquals((Boolean)response.get('isOk'), true);
+            System.assertEquals((Boolean)response.get('isOk'), true, 'Response should be OK');
         Test.stopTest();
     }
 
@@ -36,8 +36,6 @@ public class ScheduledEventCalendar_Test {
     private static void updateEvent() {
         final Id eventId = [SELECT Id FROM Custom_Event__c WHERE Name = 'Test Event'].Id;
         final Map<String, Object> response = ScheduledEventCalendar_Ctrl.findTimeZones(eventId);
-        System.debug('zone '+ response.get('timeZones'));
-        System.debug('zone '+ ((Map<String, String>)response.get('timeZones')).keySet());
         final String timeZoneStr = '(GMT+00:00) Greenwich Mean Time (Africa/Abidjan)';
         final String timeselect = String.valueOf(System.now().addDays(1));
         Test.startTest();

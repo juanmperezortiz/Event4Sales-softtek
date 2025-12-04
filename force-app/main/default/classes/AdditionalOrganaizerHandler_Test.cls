@@ -10,7 +10,6 @@ private class AdditionalOrganaizerHandler_Test {
 
     /**Generic Event */
     final Static String EVENTNAME = 'Test Event';
-    
     /**Generic LastName */
     final Static String LASTNAME = 'LastNameSmith';
 
@@ -32,9 +31,9 @@ private class AdditionalOrganaizerHandler_Test {
         Profile profileUser = [SELECT Id FROM Profile WHERE Name='Standard User'];
         final String userEmailStr = 'standarduser'+ String.valueOf(Integer.valueOf(Math.random() * 100)) +'@testorg.com';
         User extraUser = new User(
-            Alias = 'standt', Email= userEmailStr, 
-            EmailEncodingKey='UTF-8', LastName= LASTNAME, LanguageLocaleKey='en_US', 
-            LocaleSidKey='en_US', ProfileId = profileUser.Id, 
+            Alias = 'standt', Email= userEmailStr,
+            EmailEncodingKey='UTF-8', LastName= LASTNAME, LanguageLocaleKey='en_US',
+            LocaleSidKey='en_US', ProfileId = profileUser.Id,
             TimeZoneSidKey='America/Los_Angeles', UserName=userEmailStr);
         insert extraUser;
         }

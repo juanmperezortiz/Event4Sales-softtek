@@ -7,7 +7,7 @@
  * @last modified by  : Eduardo Hernandez Cuamatzi
 **/
 trigger RelatedQuestionsTrigger on Event_Question__c (before insert, before update) {
-    
+
     /**Configuration for total questions */
     final Event4SalesParams__c totalQuestions = EventSalesPanel.findParameter('TotalQuestions');
     /**Configuration to enable quiestons in the event */
@@ -21,7 +21,7 @@ trigger RelatedQuestionsTrigger on Event_Question__c (before insert, before upda
             if ((questions.size() +1) > Integer.valueOf(totalQuestions.Integer_Param__c)) {
                 for (Event_Question__c e : trigger.new) {
                     e.addError('Too many questions for this event. (Max '+String.valueOf(Integer.valueOf(totalQuestions.Integer_Param__c))+' questions)');
-                }   
+                }
             }
         }
         if(Trigger.isUpdate) {
@@ -29,7 +29,7 @@ trigger RelatedQuestionsTrigger on Event_Question__c (before insert, before upda
             if (status == 'Published' || status == 'Closed') {
                 for (Event_Question__c e : trigger.new) {
                     e.addError('You can\'t edit this record because the event status is Publised or Closed');
-                } 
+                }
             }
         }
     }

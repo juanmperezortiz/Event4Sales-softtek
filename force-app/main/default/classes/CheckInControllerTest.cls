@@ -1,7 +1,7 @@
 /**
- * @description       : 
+ * @description       :
  * @author            : Eduardo Hernandez
- * @group             : 
+ * @group             :
  * @last modified on  : 11-03-2023
  * @last modified by  : Eduardo Hernandez
 **/
@@ -32,42 +32,62 @@ private class CheckInControllerTest {
 
         Event_Question__c eventQuestion = new Event_Question__c(Name = 'Question', Custom_Event__c = eventId);
         insert eventQuestion;
-        Contact con = new Contact(Email = 'email@email.com', FirstName = 'First', LastName = 'Last');
+
+        String uniqueUserName = 'standarduser' + DateTime.now().getTime() + '@testorg.com';
+        Profile p = [SELECT Id FROM Profile WHERE Name='Standard User'];
+        User u = new User(Alias = 'standt', Email='standarduser@testorg.com',
+        EmailEncodingKey='UTF-8', LastName='Testing', LanguageLocaleKey='en_US',
+        LocaleSidKey='en_US', ProfileId = p.Id,
+        TimeZoneSidKey='America/Los_Angeles',
+         UserName=uniqueUserName);
+        insert u;
     }
 
     @isTest
     public static void getEventConfirmationTest(){
-        Event_Confirmation__c testConfirm = [SELECT Id, Confirmation_Code__c FROM Event_Confirmation__c WHERE Guest_First_Name__c = 'First' LIMIT 1];
-        Test.startTest();
-        Event_Confirmation__c event = CheckInController.getEventConfirmation(testConfirm.Id);
-        System.assert(testConfirm.Confirmation_Code__c == event.Confirmation_Code__c);
-        Test.stopTest();
+        User standardUser = [SELECT Id FROM User WHERE Email = 'standarduser@testorg.com'];
+        System.runAs(standardUser) {
+            Event_Confirmation__c testConfirm = [SELECT Id, Confirmation_Code__c FROM Event_Confirmation__c WHERE Guest_First_Name__c = 'First' LIMIT 1];
+            Test.startTest();
+            Event_Confirmation__c event = CheckInController.getEventConfirmation(testConfirm.Id);
+            System.assert(testConfirm.Confirmation_Code__c == event.Confirmation_Code__c, 'Confirmation code does not match');
+            Test.stopTest();
+        }
     }
 
     @isTest
     public static void getEventConfirmationTestExcep(){
-        Test.startTest();
-        Event_Confirmation__c event = CheckInController.getEventConfirmation(UserInfo.getUserId());
-        System.assertEquals(event, null, 'Query exception');
-        Test.stopTest();
+        User standardUser = [SELECT Id FROM User WHERE Email = 'standarduser@testorg.com'];
+        System.runAs(standardUser) {
+            Test.startTest();
+            Event_Confirmation__c event = CheckInController.getEventConfirmation(UserInfo.getUserId());
+            System.assertEquals(event, null, 'Query exception');
+            Test.stopTest();
+        }
     }
 
     @isTest
     public static void showEventTest(){
-        Event_Confirmation__c testConfirm = [SELECT Id, Confirmation_Code__c FROM Event_Confirmation__c WHERE Guest_First_Name__c = 'First' LIMIT 1];
-        Test.startTest();
-        Map<Integer, Datetime> event = CheckInController.showEvent(testConfirm.Id);
-        System.assert(event != null);
-        Test.stopTest();
+        User standardUser = [SELECT Id FROM User WHERE Email = 'standarduser@testorg.com'];
+        System.runAs(standardUser) {
+            Event_Confirmation__c testConfirm = [SELECT Id, Confirmation_Code__c FROM Event_Confirmation__c WHERE Guest_First_Name__c = 'First' LIMIT 1];
+            Test.startTest();
+            Map<Integer, Datetime> event = CheckInController.showEvent(testConfirm.Id);
+            System.assert(event != null, 'Event map is null');
+            Test.stopTest();
+        }
     }
 
     @isTest
     public static void updateEventConfirmationTest(){
-        Event_Confirmation__c testConfirm = [SELECT Id, Check_In__c FROM Event_Confirmation__c WHERE Guest_First_Name__c = 'First' LIMIT 1];
-        Test.startTest();
-        CheckInController.updateEventConfirmation(testConfirm.Id);
-        Event_Confirmation__c afterConfirm = [SELECT Id, Check_In__c FROM Event_Confirmation__c WHERE Guest_First_Name__c = 'First' LIMIT 1];
-        System.assert(testConfirm.Check_In__c != afterConfirm.Check_In__c);
-        Test.stopTest();
+        User standardUser = [SELECT Id FROM User WHERE Email = 'standarduser@testorg.com'];
+        System.runAs(standardUser) {
+            Event_Confirmation__c testConfirm = [SELECT Id, Check_In__c FROM Event_Confirmation__c WHERE Guest_First_Name__c = 'First' LIMIT 1];
+            Test.startTest();
+            CheckInController.updateEventConfirmation(testConfirm.Id);
+            Event_Confirmation__c afterConfirm = [SELECT Id, Check_In__c FROM Event_Confirmation__c WHERE Guest_First_Name__c = 'First' LIMIT 1];
+            System.assert(testConfirm.Check_In__c != afterConfirm.Check_In__c, 'Check in value does not match');
+            Test.stopTest();
+        }
     }
 }

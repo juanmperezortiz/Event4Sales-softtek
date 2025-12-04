@@ -11,15 +11,15 @@ trigger EventConfirmationEmailTrigger on Event_Confirmation__c (before insert, a
         eventNew.Confirmation_Code__c = confirmationCode;
     }
     if(trigger.isAfter && trigger.isInsert){
-        
+
         EventConfirmationEmailHandler handler = new EventConfirmationEmailHandler();
         List<Messaging.SingleEmailMessage> emailList = new List<Messaging.SingleEmailMessage>();
-        
+
         Messaging.SingleEmailMessage mailRegistrant = handler.registrationEmail(eventNew);
-        
+
         emailList.add(mailRegistrant);
 
         Messaging.sendEmail(emailList);
-    
+
     }
 }

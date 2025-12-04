@@ -8,39 +8,38 @@
 public without sharing class CheckInController {
 
     /**Configuration time to start events */
-    final static Event4SalesParams__c beforeStartEvent = EventSalesPanel.findParameter('MinimalDaysBeforeEvent');
+    final static Event4SalesParams__c BEFORE_START_EVENT = EventSalesPanel.findParameter('MinimalDaysBeforeEvent');
     /**Configuration time to end events */
-    final static Event4SalesParams__c afterStartEvent = EventSalesPanel.findParameter('MaximumDaysAfterEvent');
+    final static Event4SalesParams__c AFTER_START_EVENT = EventSalesPanel.findParameter('MaximumDaysAfterEvent');
 
     /**
     * @description Find event confirmation
-    * @author Eduardo Hernandez Cuamatzi | 11-11-2025 
-    * @param id 
-    * @return Event_Confirmation__c 
+    * @author Eduardo Hernandez Cuamatzi | 11-11-2025
+    * @param id
+    * @return Event_Confirmation__c
     **/
     @AuraEnabled(cacheable = true)
     public static Event_Confirmation__c getEventConfirmation(String id){
         try {
-            return[SELECT Id, Check_In__c, Confirmation_Code__c, Custom_Event__r.Date__c, Custom_Event__r.Time_ZoneStr__c FROM Event_Confirmation__c WHERE Id =: id LIMIT 1];    
+            return[SELECT Id, Check_In__c, Confirmation_Code__c, Custom_Event__r.Date__c, Custom_Event__r.Time_ZoneStr__c FROM Event_Confirmation__c WHERE Id =: id WITH SECURITY_ENFORCED LIMIT 1];
         } catch (Exception e) {
             return null;
         }
-        
     }
 
     /**
     * @description Retrive events avoid to start
-    * @author Eduardo Hernandez Cuamatzi | 11-11-2025 
+    * @author Eduardo Hernandez Cuamatzi | 11-11-2025
     * @param id Event to check
     * @return Map<Integer, Datetime> Map with the time to start and end the event
     **/
     @AuraEnabled(cacheable = true)
     public static Map<Integer, Datetime> showEvent(Id id) {
         Map<Integer,Datetime> returnMap = new Map<Integer,Datetime>();
-        Event_Confirmation__c event = [SELECT Id, Custom_Event__r.Date__c FROM Event_Confirmation__c WHERE Id =: id LIMIT 1];
+        Event_Confirmation__c event = [SELECT Id, Custom_Event__r.Date__c FROM Event_Confirmation__c WHERE Id =: id WITH SECURITY_ENFORCED LIMIT 1];
         Datetime dateNow = Datetime.now();
-        Datetime date2HoursBefore = event.Custom_Event__r.Date__c.addHours(-(Integer.valueOf(beforeStartEvent.Integer_Param__c)));
-        Datetime date2HoursAfter = event.Custom_Event__r.Date__c.addHours(-(Integer.valueOf(afterStartEvent.Integer_Param__c)));
+        Datetime date2HoursBefore = event.Custom_Event__r.Date__c.addHours(-(Integer.valueOf(BEFORE_START_EVENT.Integer_Param__c)));
+        Datetime date2HoursAfter = event.Custom_Event__r.Date__c.addHours(-(Integer.valueOf(AFTER_START_EVENT.Integer_Param__c)));
         if(dateNow >= date2HoursBefore ){
             if (dateNow <= date2HoursAfter ) {
                 returnMap.put(0, dateNow);
@@ -57,13 +56,14 @@ public without sharing class CheckInController {
 
     /**
     * @description Update the event confirmation
-    * @author Eduardo Hernandez Cuamatzi | 11-11-2025 
+    * @author Eduardo Hernandez Cuamatzi | 11-11-2025
     * @param id Event update result
     **/
     @AuraEnabled(cacheable = false)
     public static void updateEventConfirmation(Id id){
-        Event_Confirmation__c event = [SELECT Id, Check_In__c FROM Event_Confirmation__c WHERE Id =: id LIMIT 1];
-        event.Check_In__c = true;
-        update event;
+        List<Event_Confirmation__c> event = [SELECT Id, Check_In__c FROM Event_Confirmation__c WHERE Id =: id WITH SECURITY_ENFORCED LIMIT 1];
+        event[0].Check_In__c = true;
+        SObjectAccessDecision decision = Security.stripInaccessible(AccessType.UPDATABLE, event);
+        update decision.getRecords();
     }
 }

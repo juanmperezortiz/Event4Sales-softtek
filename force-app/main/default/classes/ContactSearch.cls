@@ -6,11 +6,11 @@
  * @last modified by  : Eduardo Hernandez Cuamatzi
 **/
 
-public class ContactSearch {
+public without sharing class ContactSearch {
     /**
     * @description Find contacts by name, email or phone
     * @description       : This method is used to find contacts by name, email or phone
-    * @author Eduardo Hernandez Cuamatzi | 11-11-2025 
+    * @author Eduardo Hernandez Cuamatzi | 11-11-2025
     * @param textSearch string value to search
     * @return List<Contact> List of Contacts
     **/
@@ -18,32 +18,32 @@ public class ContactSearch {
     public static List<Contact> getContacts(String textSearch) {
         List<Contact> contactList = new List<Contact>();
         try {
-            for (List<SObject> lsObject: [FIND :textSearch IN ALL FIELDS RETURNING Contact(Id, Name, Email, Phone)]) {
+            for (List<SObject> lsObject: [FIND :textSearch IN ALL FIELDS RETURNING Contact(Id, Name, Email, Phone LIMIT 2000)]) {
                 contactList = (List<Contact>)lsObject;
             }
         } catch (Exception error) {
-            System.debug(error.getMessage() + ' '+ error.getCause());
+            throw new AuraHandledException(error.getMessage() + ' '+ error.getCause());
         }
         return contactList;
     }
     /**
     * @description find all ready invited contacts
     * @description       : This method is used to find all ready invited contacts
-    * @author Eduardo Hernandez Cuamatzi | 11-11-2025 
+    * @author Eduardo Hernandez Cuamatzi | 11-11-2025
     * @param eventId Event related to the contacts
     * @return List<Event_Confirmation__c> Event Confirmation results
     **/
     @AuraEnabled(Cacheable = false)
     public static List<Event_Confirmation__c> getAllReadyInvitedContacts(Id eventId){
-        List<Event_Confirmation__c> contactList = [SELECT Id, Contact__c, Custom_Event__c 
-        FROM Event_Confirmation__c WHERE Custom_Event__c =: eventId AND Contact__c != null];
+        List<Event_Confirmation__c> contactList = [SELECT Id, Contact__c, Custom_Event__c
+        FROM Event_Confirmation__c WHERE Custom_Event__c =: eventId AND Contact__c != null WITH SECURITY_ENFORCED];
         return contactList;
     }
 
     /**
     * @description Create invitation
     * @description       : This method is used to create invitation
-    * @author Eduardo Hernandez Cuamatzi | 11-11-2025 
+    * @author Eduardo Hernandez Cuamatzi | 11-11-2025
     * @param ids Contacts Id
     * @param eventId Event Id
     * @return List<Event_Confirmation__c> List of Event Confirmation results
@@ -52,9 +52,9 @@ public class ContactSearch {
     public static List<Event_Confirmation__c> createInvitation(List<String> ids, Id eventId){
         List<Contact> contactList;
         try {
-            contactList = [SELECT Id, FirstName, LastName, Email, Phone FROM Contact WHERE Id IN :ids];
+            contactList = [SELECT Id, FirstName, LastName, Email, Phone FROM Contact WHERE Id IN :ids WITH SECURITY_ENFORCED];
         } catch (Exception e) {
-            
+            throw new AuraHandledException(e.getMessage() + ' '+ e.getCause());
         }
         List<Event_Confirmation__c> eventConfirmations = new List<Event_Confirmation__c>();
         for (Contact con : contactList) {
@@ -66,22 +66,22 @@ public class ContactSearch {
             eventConfirmation.Guest_Last_Name__c = con.LastName;
             eventConfirmations.add(eventConfirmation);
         }
-        insert eventConfirmations;
+        SObjectAccessDecision decision = Security.stripInaccessible(AccessType.CREATABLE, eventConfirmations);
+        insert decision.getRecords();
         return eventConfirmations;
     }
-    
     /**
     * @description Send emails
     * @description       : This method is used to send emails
-    * @author Eduardo Hernandez Cuamatzi | 11-11-2025 
+    * @author Eduardo Hernandez Cuamatzi | 11-11-2025
     * @param eventId Event Id
     **/
     @AuraEnabled(Cacheable = false)
     public static void sendEmails(Id eventId){
-        List<Event_Confirmation__c> eventConfirmations = [SELECT Id, EvName__c, Custom_Event__c, 
-            Email__c, EvDateStartDisplay__c, 
-            EvAddress__c, EvHostName__c, Email_Sended__c 
-            FROM Event_Confirmation__c WHERE Custom_Event__c =: eventId AND Email_Sended__c = false];
+        List<Event_Confirmation__c> eventConfirmations = [SELECT Id, EvName__c, Custom_Event__c,
+            Email__c, EvDateStartDisplay__c,
+            EvAddress__c, EvHostName__c, Email_Sended__c
+            FROM Event_Confirmation__c WHERE Custom_Event__c =: eventId AND Email_Sended__c = false WITH SECURITY_ENFORCED];
 
             List<String> emails = new List<String>();
 
@@ -105,7 +105,7 @@ public class ContactSearch {
             email.setToAddresses(emails);
             email.setHtmlBody(body);
             email.setSubject(eventConfirmations[0].EvName__c);
-        
+
             emailList.add(email);
             Messaging.sendEmail(emailList);
     }

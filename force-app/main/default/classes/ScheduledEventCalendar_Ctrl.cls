@@ -6,14 +6,13 @@
  * @last modified by  : Eduardo Hernandez Cuamatzi
 **/
 public without sharing class ScheduledEventCalendar_Ctrl {
-    
+
     /**Final Map of all TimeZones */
     final static Map<String, String> MAPTIMEZONES = new Map<String, String>();
 
     static {
         Schema.DescribeFieldResult fieldResult = User.TimeZoneSidKey.getDescribe();
 		List<Schema.PicklistEntry> ple = fieldResult.getPicklistValues();
-        final Date dateNow = System.now().date();
 		for(Schema.PicklistEntry pickListVal : ple) {
             MAPTIMEZONES.put(pickListVal.getLabel(), pickListVal.getValue());
 		}
@@ -21,8 +20,9 @@ public without sharing class ScheduledEventCalendar_Ctrl {
 
     /**
     * @description Return map of datetimes
-    * @author Eduardo Hernandez | 05-19-2023 
-    * @return Map<String, Object> 
+    * @author Eduardo Hernandez | 05-19-2023
+    * @param recordId
+    * @return Map<String, Object>
     **/
     @AuraEnabled
     public static Map<String,Object> findTimeZones(String recordId) {
@@ -39,15 +39,16 @@ public without sharing class ScheduledEventCalendar_Ctrl {
     }
 
     /**
-    * @description Update record event 
-    * @author Eduardo Hernandez | 05-17-2023 
+    * @description Update record event
+    * @author Eduardo Hernandez | 05-17-2023
+    * @param recordId
     * @return Map<String, Object> Result update event record
     **/
     @AuraEnabled
     public static Map<String, Object> updateEvent(String recordId, String timeZoneStr, String timeselect) {
         final Map<String, Object> response = new Map<String, Object>();
         try {
-            final Custom_Event__c eventRecord = [Select Id,Timezone_Hours__c,Minutes_Or_Hours__c,Hours_to_Add__c, Date__c,Duration__c from Custom_Event__c where Id =: recordId];
+            final Custom_Event__c eventRecord = [Select Id,Timezone_Hours__c,Minutes_Or_Hours__c,Hours_to_Add__c, Date__c,Duration__c from Custom_Event__c where Id =: recordId WITH SECURITY_ENFORCED];
             final Custom_Event__c eventUpdate = new Custom_Event__c();
             final String timeItem = MAPTIMEZONES.get(timeZoneStr);
             final Timezone timezoneRecord = Timezone.getTimeZone(timeItem);
@@ -58,8 +59,6 @@ public without sharing class ScheduledEventCalendar_Ctrl {
             final DateTime timeScheduledReal = timeScheduled.addSeconds(parseMilli(offtsettUser));
             String startDate2 = timeScheduledReal.formatGmt('yyyy-MM-dd\'T\'HH:mm:ss')+'Z';
             final DateTime timeScheduled2 = parseTime(startDate2);
-            final DateTime timeScheduledGMT = timeScheduled2.addSeconds(-1*parseMilli(offtsettone));
-            final DateTime timeScheduledGMTLocal = timeScheduledGMT.addSeconds(parseMilli(offtsettUser));
             final Datetime dateEventReal = timeScheduled.addSeconds(parseMilli(eventRecord.Hours_to_Add__c));
             Integer minutesAdd = Integer.valueOf(eventRecord.Duration__c);
             if (eventRecord.Minutes_Or_Hours__c.equalsIgnoreCase('Hours')) {
@@ -85,7 +84,7 @@ public without sharing class ScheduledEventCalendar_Ctrl {
 
     /**
     * @description Parse Date Strint to DateTime
-    * @author Eduardo Hernandez | 05-19-2023 
+    * @author Eduardo Hernandez | 05-19-2023
     * @param timeselect Date time input from lwc
     * @return Datetime parse datetime
     **/
@@ -93,13 +92,12 @@ public without sharing class ScheduledEventCalendar_Ctrl {
         String dtString = timeselect.replace('T', ' ');
         dtString = dtString.replace('Z', '');
         DateTime datime = DateTime.valueOfGMT(dtString);
-        System.debug('datime::: '+datime);
         return datime;
     }
 
     /**
     * @description Recover init data to display in the LWC
-    * @author Eduardo Hernandez | 05-24-2023 
+    * @author Eduardo Hernandez | 05-24-2023
     * @param recordId Custom event record Id
     * @return Map<String, String> Map of data values with times formated
     **/
@@ -135,7 +133,7 @@ public without sharing class ScheduledEventCalendar_Ctrl {
 
     /**
     * @description Parse milliseconds to seconds
-    * @author Eduardo Hernandez | 05-30-2023 
+    * @author Eduardo Hernandez | 05-30-2023
     * @param milliSeconds milliseconds to conver
     * @return Integer Total seconds equivalent
     **/

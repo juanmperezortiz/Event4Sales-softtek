@@ -115,6 +115,12 @@ export default class EventConfirmationForm extends LightningElement {
         for(var keyA in this.answers){ 
             answersApex = [...answersApex, {key: keyA, value: String(this.answers[keyA])}];
         }
+        const data = {
+            eventId: this.eventId,
+            firstName: this.guestFirstName,
+            lastName: this.guestLastName,
+            email: this.guestEmail
+        };
         const allValid = [
             ...this.template.querySelectorAll('lightning-input'),
         ].reduce((validSoFar, inputCmp) => {
@@ -122,7 +128,7 @@ export default class EventConfirmationForm extends LightningElement {
             return validSoFar && inputCmp.checkValidity();
         }, true);
         if (allValid) {
-            createEventConfirmation({ eventId: this.eventId, firstName: this.guestFirstName, lastName: this.guestLastName, email: this.guestEmail}).then(result =>{
+            createEventConfirmation({ eventData : data}).then(result =>{
                 this.showForm = false;
                 this.successRegistration = true;
                 this.response = 'A confirmation has been sent to: ' + this.guestEmail;

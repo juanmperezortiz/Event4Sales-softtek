@@ -1,7 +1,7 @@
 /**
- * @description       : 
+ * @description       :
  * @author            : Eduardo Hernandez
- * @group             : 
+ * @group             :
  * @last modified on  : 11-03-2023
  * @last modified by  : Eduardo Hernandez
 **/
@@ -25,7 +25,7 @@ public class EventConfirmationEmailTriggerTest {
         testEvent.Type_of_Event__c = 'Type';
         insert testEvent;
     }
-    
+
     @isTest
     private static void testTrigger(){
         Id eventId = [SELECT Id FROM Custom_Event__c WHERE Name = 'Test Event'].Id;
@@ -35,5 +35,6 @@ public class EventConfirmationEmailTriggerTest {
             Custom_Event__c = eventId
         );
         insert testConfirm;
+        System.assertEquals(testConfirm.Custom_Event__c, eventId, 'Event id does not match');
     }
 }

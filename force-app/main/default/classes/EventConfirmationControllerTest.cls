@@ -10,6 +10,17 @@ private class EventConfirmationControllerTest {
 
     @TestSetup
     static void makeData() {
+
+        String uniqueUserName = 'standarduser' + DateTime.now().getTime() + '@testorg.com';
+        Profile p = [SELECT Id FROM Profile WHERE Name='System Administrator'];
+        User sysAdmin = new User(Alias = 'standt', Email='standarduser@testorg.com',
+        EmailEncodingKey='UTF-8', LastName='Testing', LanguageLocaleKey='en_US',
+        LocaleSidKey='en_US', ProfileId = p.Id,
+        TimeZoneSidKey='America/Los_Angeles',
+         UserName=uniqueUserName);
+        insert sysAdmin;
+        System.runAs(sysAdmin) {
+
         Event4Sales_PostInstallPackage postinstall = new Event4Sales_PostInstallPackage();
         Test.testInstall(postinstall, null);
         Test.testInstall(postinstall, new Version(1,0), true);
@@ -31,95 +42,122 @@ private class EventConfirmationControllerTest {
         insert testConfirm;
         Event_Question__c eventQuestion = new Event_Question__c(Name = 'Question', Custom_Event__c = eventId);
         insert eventQuestion;
-        Contact con = new Contact(Email = 'email@email.com', FirstName = 'First', LastName = 'Last');
+        }
     }
 
     @isTest
     public static void getCustomEventTest(){
-        Id eventId = [SELECT Id FROM Custom_Event__c WHERE Name = 'Test Event'].Id;
-        Test.startTest();
-        Map<String, Object> event = EventConfirmationController.getCustomEvent(eventId);
-        System.assert(event.get('eventRecord') != null);
-        Test.stopTest();
+        User sysAdmin = [SELECT Id FROM User WHERE Email = 'standarduser@testorg.com'];
+        System.runAs(sysAdmin) {
+            Id eventId = [SELECT Id FROM Custom_Event__c WHERE Name = 'Test Event'].Id;
+            Test.startTest();
+            Map<String, Object> event = EventConfirmationController.getCustomEvent(eventId);
+            System.assert(event.get('eventRecord') != null, 'Event map is null');
+            Test.stopTest();
+        }
     }
 
     @isTest
     public static void createEventConfirmationTest(){
-        Id eventId = [SELECT Id FROM Custom_Event__c WHERE Name = 'Test Event'].Id;
-        String firstName = 'First';
-        String lastName = 'Last';
-        String email = 'email@email.com';
-        Test.startTest();
-        Id confId = EventConfirmationController.createEventConfirmation(eventId, firstName, lastName, email);
-        System.assert(confId != null);
-        Test.stopTest();
-        
+        User sysAdmin = [SELECT Id FROM User WHERE Email = 'standarduser@testorg.com'];
+        System.runAs(sysAdmin) {
+            EventConfirmationController.EventConfirmationData eventData = new EventConfirmationController.EventConfirmationData();
+            eventData.eventId = [SELECT Id FROM Custom_Event__c WHERE Name = 'Test Event'].Id;
+            eventData.firstName = 'First';
+            eventData.lastName = 'Last';
+            eventData.email = 'email@email.com';
+            Test.startTest();
+            Id confId = EventConfirmationController.createEventConfirmation(eventData);
+            System.assert(confId != null, 'Confirmation Id is null');
+            Test.stopTest();
+        }
+
     }
 
     @isTest
     public static void answersListTestTrue(){
-        List<Map<String,String>> listMap = new List<Map<String,String>>();
-        Map<String,String> mapAnswer = new Map<String,String>();
-        Event_Confirmation__c testConfirm = [SELECT Id FROM Event_Confirmation__c WHERE Guest_First_Name__c = 'First' LIMIT 1];
-        Event_Question__c eventQuestionId = [SELECT Id FROM Event_Question__c WHERE Name =: 'Question' LIMIT 1];
-        Test.startTest();
-        
-        mapAnswer.put('key', eventQuestionId.Id);
-        mapAnswer.put('value', 'true');
-        listMap.add(mapAnswer);
-        EventConfirmationController.answersList(listMap, testConfirm.Id);
-        Test.stopTest();
+        User sysAdmin = [SELECT Id FROM User WHERE Email = 'standarduser@testorg.com'];
+        System.runAs(sysAdmin) {
+            List<Map<String,String>> mapList = new List<Map<String,String>>();
+            Map<String,String> mapAnswer = new Map<String,String>();
+            Event_Confirmation__c testConfirm = [SELECT Id FROM Event_Confirmation__c WHERE Guest_First_Name__c = 'First' LIMIT 1];
+            Event_Question__c eventQuestionId = [SELECT Id FROM Event_Question__c WHERE Name =: 'Question' LIMIT 1];
+            Test.startTest();
+
+            mapAnswer.put('key', eventQuestionId.Id);
+            mapAnswer.put('value', 'true');
+            mapList.add(mapAnswer);
+            EventConfirmationController.answersList(mapList, testConfirm.Id);
+            Integer invocations = Limits.getEmailInvocations();
+            System.AssertEquals(1, invocations, 'An email should be sent');
+            Test.stopTest();
+        }
     }
 
     @isTest
     public static void answersListTestFalse(){
-        List<Map<String,String>> listMap = new List<Map<String,String>>();
-        Map<String,String> mapAnswer = new Map<String,String>();
-        Event_Confirmation__c testConfirm = [SELECT Id FROM Event_Confirmation__c WHERE Guest_First_Name__c = 'First' LIMIT 1];
-        Event_Question__c eventQuestionId = [SELECT Id FROM Event_Question__c WHERE Name =: 'Question' LIMIT 1];
-        Test.startTest();
-        
-        mapAnswer.put('key', eventQuestionId.Id);
-        mapAnswer.put('value', 'false');
-        listMap.add(mapAnswer);
-        EventConfirmationController.answersList(listMap, testConfirm.Id);
-        Test.stopTest();
+        User sysAdmin = [SELECT Id FROM User WHERE Email = 'standarduser@testorg.com'];
+        System.runAs(sysAdmin) {
+            List<Map<String,String>> mapListTest = new List<Map<String,String>>();
+            Map<String,String> mapAnswer = new Map<String,String>();
+            Event_Confirmation__c testConfirm = [SELECT Id FROM Event_Confirmation__c WHERE Guest_First_Name__c = 'First' LIMIT 1];
+            Event_Question__c eventQuestionId = [SELECT Id FROM Event_Question__c WHERE Name =: 'Question' LIMIT 1];
+            Test.startTest();
+
+            mapAnswer.put('key', eventQuestionId.Id);
+            mapAnswer.put('value', 'false');
+            mapListTest.add(mapAnswer);
+            EventConfirmationController.answersList(mapListTest, testConfirm.Id);
+            Integer invocations = Limits.getEmailInvocations();
+            System.AssertEquals(1, invocations, 'An email should be sent');
+            Test.stopTest();
+        }
     }
 
     @isTest
     public static void answersListTestValue(){
-        List<Map<String,String>> listMap = new List<Map<String,String>>();
-        Map<String,String> mapAnswer = new Map<String,String>();
-        Event_Confirmation__c testConfirm = [SELECT Id FROM Event_Confirmation__c WHERE Guest_First_Name__c = 'First' LIMIT 1];
-        Event_Question__c eventQuestionId = [SELECT Id FROM Event_Question__c WHERE Name =: 'Question' LIMIT 1];
-        Test.startTest();
-        
-        mapAnswer.put('key', eventQuestionId.Id);
-        mapAnswer.put('value', 'value');
-        listMap.add(mapAnswer);
-        EventConfirmationController.answersList(listMap, testConfirm.Id);
-        Test.stopTest();
+        User sysAdmin = [SELECT Id FROM User WHERE Email = 'standarduser@testorg.com'];
+        System.runAs(sysAdmin) {
+            List<Map<String,String>> listMap = new List<Map<String,String>>();
+            Map<String,String> mapAnswer = new Map<String,String>();
+            Event_Confirmation__c testConfirm = [SELECT Id FROM Event_Confirmation__c WHERE Guest_First_Name__c = 'First' LIMIT 1];
+            Event_Question__c eventQuestionId = [SELECT Id FROM Event_Question__c WHERE Name =: 'Question' LIMIT 1];
+            Test.startTest();
+
+            mapAnswer.put('key', eventQuestionId.Id);
+            mapAnswer.put('value', 'value');
+            listMap.add(mapAnswer);
+            EventConfirmationController.answersList(listMap, testConfirm.Id);
+            Integer invocations = Limits.getEmailInvocations();
+            System.AssertEquals(1, invocations, 'An email should be sent');
+            Test.stopTest();
+        }
     }
 
     @isTest
     private static void generateICS() {
-        final Id eventId = [SELECT Id FROM Custom_Event__c WHERE Name = 'Test Event'].Id;
-        final Event_Confirmation__c testConfirm = [Select Id from Event_Confirmation__c where Custom_Event__c =: eventId];
-        final Map<String, Object> response = EventConfirmationController.generateICS(testConfirm.Id);
-        System.assert(response.containsKey('isOk'), 'ICS Generated');
+        User sysAdmin = [SELECT Id FROM User WHERE Email = 'standarduser@testorg.com'];
+        System.runAs(sysAdmin) {
+            final Id eventId = [SELECT Id FROM Custom_Event__c WHERE Name = 'Test Event'].Id;
+            final Event_Confirmation__c testConfirm = [Select Id from Event_Confirmation__c where Custom_Event__c =: eventId];
+            final Map<String, Object> response = EventConfirmationController.generateICS(testConfirm.Id);
+            System.assert(response.containsKey('isOk'), 'ICS Generated');
+        }
     }
 
     @isTest
     public static void updateAnsware() {
-        final Custom_Event__c eventRecord = [SELECT Id FROM Custom_Event__c WHERE Name = 'Test Event'];
-        Event_Confirmation__c testConfirm = [SELECT Id FROM Event_Confirmation__c WHERE Guest_First_Name__c = 'First' LIMIT 1];
-        Event_Question__c eventQuestionId = [SELECT Id FROM Event_Question__c WHERE Name =: 'Question' LIMIT 1];
-        Test.startTest();
-            eventRecord.Status__c = 'Published';
-            update eventRecord;
-            eventQuestionId.Required__c = true;
-            Database.SaveResult srList = Database.update(eventQuestionId, false);
-        Test.stopTest();
-        System.assertEquals(srList.isSuccess(), false, 'Update error');
+        User sysAdmin = [SELECT Id FROM User WHERE Email = 'standarduser@testorg.com'];
+        System.runAs(sysAdmin) {
+            final Custom_Event__c eventRecord = [SELECT Id FROM Custom_Event__c WHERE Name = 'Test Event'];
+            Event_Question__c eventQuestionId = [SELECT Id FROM Event_Question__c WHERE Name =: 'Question' LIMIT 1];
+            Test.startTest();
+                eventRecord.Status__c = 'Published';
+                update eventRecord;
+                eventQuestionId.Required__c = true;
+                Database.SaveResult srList = Database.update(eventQuestionId, false);
+            Test.stopTest();
+            System.assertEquals(srList.isSuccess(), false, 'Update error');
+        }
     }
 }

@@ -17,7 +17,7 @@ trigger AdditionalOrganaizerHandler on Additional_Organizer__c (before insert, b
 
     if (newHostValid.Active__c) {
         if (trigger.isBefore) {
-            final List<Additional_Organizer__c> lstEvent = [Select Id from Additional_Organizer__c where Custom_Event__c =: additionalOrganaizer.Custom_Event__c];
+            final List<Additional_Organizer__c> lstEvent = [Select Id from Additional_Organizer__c where Custom_Event__c =: additionalOrganaizer.Custom_Event__c WITH SECURITY_ENFORCED];
             if (lstEvent.size() > Integer.valueOf(totalHostes.Integer_Param__c)) {
                 additionalOrganaizer.addError('You are reached the maximum host by event');
             }

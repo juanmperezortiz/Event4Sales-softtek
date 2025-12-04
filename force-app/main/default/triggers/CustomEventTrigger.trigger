@@ -7,13 +7,13 @@
  * @last modified by  : Eduardo Hernandez Cuamatzi
 **/
 trigger CustomEventTrigger on Custom_Event__c (before insert, before update) {
-    
+
     /**Configuration for days before event start */
     final Event4SalesParams__c daysBefore = EventSalesPanel.findParameter('MinimumDaysForNewEvents');
     /**Configuration to Enable trigger */
     final Event4SalesParams__c enableTriggerEvent = EventSalesPanel.findParameter('TriggerCustomEvent');
     Custom_Event__c eventNew = trigger.new[0];
-    
+
     if (enableTriggerEvent.Active__c) {
         if (trigger.isBefore && trigger.isUpdate) {
             Custom_Event__c eventOld = trigger.old[0];
@@ -24,7 +24,7 @@ trigger CustomEventTrigger on Custom_Event__c (before insert, before update) {
                 }
             }
         }
-    
+
         if(trigger.isUpdate) {
             Custom_Event__c eventOld = trigger.old[0];
             if((eventNew.Name != eventOld.Name || eventNew.Date__c != eventOld.Date__c ||
