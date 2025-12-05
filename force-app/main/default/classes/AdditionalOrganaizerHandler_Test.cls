@@ -10,6 +10,7 @@ private class AdditionalOrganaizerHandler_Test {
 
     /**Generic Event */
     final Static String EVENTNAME = 'Test Event';
+
     /**Generic LastName */
     final Static String LASTNAME = 'LastNameSmith';
 
@@ -40,38 +41,47 @@ private class AdditionalOrganaizerHandler_Test {
 
     @isTest
     static void additionalOrganizer() {
-        final Id eventId = [SELECT Id FROM Custom_Event__c WHERE Name =: EVENTNAME].Id;
-        final Id organaizerId = [SELECT Id FROM User WHERE LastName =: LASTNAME].Id;
-        Additional_Organizer__c extraOrganizer = new Additional_Organizer__c();
-        extraOrganizer.Custom_Event__c = eventId;
-        extraOrganizer.User__c = organaizerId;
-        Test.startTest();
-            insert extraOrganizer;
-        Test.stopTest();
-        System.assertEquals(String.isNotEmpty(extraOrganizer.Id), true, 'Extra Organaizer success');
+        User standardUser = [SELECT Id FROM User WHERE Alias = 'standt'];
+        System.runAs(standardUser) {
+            final Id eventId = [SELECT Id FROM Custom_Event__c WHERE Name =: EVENTNAME].Id;
+            final Id organaizerId = [SELECT Id FROM User WHERE LastName =: LASTNAME].Id;
+            Additional_Organizer__c extraOrganizer = new Additional_Organizer__c();
+            extraOrganizer.Custom_Event__c = eventId;
+            extraOrganizer.User__c = organaizerId;
+            Test.startTest();
+                insert extraOrganizer;
+            Test.stopTest();
+            System.assertEquals(String.isNotEmpty(extraOrganizer.Id), true, 'Extra Organaizer success');
+        }
     }
 
 
     @isTest
     static void customEventUpdate() {
-        final Custom_Event__c eventRecord = [SELECT Id,Date__c FROM Custom_Event__c WHERE Name =: EVENTNAME];
-        eventRecord.Date__c = eventRecord.Date__c.addDays(5);
-        Test.startTest();
-            update eventRecord;
-        Test.stopTest();
-        System.assertEquals(String.isNotEmpty(eventRecord.Id), true, 'Update success');
+        User standardUser = [SELECT Id FROM User WHERE Alias = 'standt'];
+        System.runAs(standardUser) {
+            final Custom_Event__c eventRecord = [SELECT Id,Date__c FROM Custom_Event__c WHERE Name =: EVENTNAME];
+            eventRecord.Date__c = eventRecord.Date__c.addDays(5);
+            Test.startTest();
+                update eventRecord;
+            Test.stopTest();
+            System.assertEquals(String.isNotEmpty(eventRecord.Id), true, 'Update success');
+        }
     }
 
 
     @isTest
     static void customEventUpdateError() {
-        final Custom_Event__c eventRecord = [SELECT Id,Date__c FROM Custom_Event__c WHERE Name =: EVENTNAME];
-        eventRecord.Status__c = 'Published';
-        Test.startTest();
-            update eventRecord;
-            eventRecord.Date__c = eventRecord.Date__c.addDays(-5);
-            Database.SaveResult srList = Database.update(eventRecord, false);
-        Test.stopTest();
-        System.assertEquals(srList.isSuccess(), false, 'Update error');
+        User standardUser = [SELECT Id FROM User WHERE Alias = 'standt'];
+        System.runAs(standardUser) {
+            final Custom_Event__c eventRecord = [SELECT Id,Date__c FROM Custom_Event__c WHERE Name =: EVENTNAME];
+            eventRecord.Status__c = 'Published';
+            Test.startTest();
+                update eventRecord;
+                eventRecord.Date__c = eventRecord.Date__c.addDays(-5);
+                Database.SaveResult srList = Database.update(eventRecord, false);
+            Test.stopTest();
+            System.assertEquals(srList.isSuccess(), false, 'Update error');
+        }
     }
 }

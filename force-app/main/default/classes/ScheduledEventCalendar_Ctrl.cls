@@ -42,6 +42,8 @@ public without sharing class ScheduledEventCalendar_Ctrl {
     * @description Update record event
     * @author Eduardo Hernandez | 05-17-2023
     * @param recordId
+    * @param timeZoneStr
+    * @param timeselect
     * @return Map<String, Object> Result update event record
     **/
     @AuraEnabled
@@ -56,9 +58,6 @@ public without sharing class ScheduledEventCalendar_Ctrl {
             final DateTime timeScheduled = parseTime(timeselect);
             final Integer offtsettone = timezoneRecord.getOffset(timeScheduled);
             final Integer offtsettUser = timezonUser.getOffset(timeScheduled);
-            final DateTime timeScheduledReal = timeScheduled.addSeconds(parseMilli(offtsettUser));
-            String startDate2 = timeScheduledReal.formatGmt('yyyy-MM-dd\'T\'HH:mm:ss')+'Z';
-            final DateTime timeScheduled2 = parseTime(startDate2);
             final Datetime dateEventReal = timeScheduled.addSeconds(parseMilli(eventRecord.Hours_to_Add__c));
             Integer minutesAdd = Integer.valueOf(eventRecord.Duration__c);
             if (eventRecord.Minutes_Or_Hours__c.equalsIgnoreCase('Hours')) {
@@ -73,7 +72,8 @@ public without sharing class ScheduledEventCalendar_Ctrl {
             eventUpdate.Status__c = 'Published';
             eventUpdate.Datetime_Selected__c = timeselect;
             eventUpdate.Event_End_DateTime__c = dateEventEndReal;
-            update eventUpdate;
+            SObjectAccessDecision decision = Security.stripInaccessible(AccessType.UPDATABLE, new List<Custom_Event__c>{eventUpdate});
+            update decision.getRecords();
             response.put('isOk', true);
         } catch (DmlException dmlEx) {
             response.put('isOk', false);
@@ -102,7 +102,7 @@ public without sharing class ScheduledEventCalendar_Ctrl {
     * @return Map<String, String> Map of data values with times formated
     **/
     private static Map<String, String> initData(String recordId) {
-        final Custom_Event__c eventRecord = [Select Id,Timezone_Hours__c,Type_of_Event__c,Time_ZoneStr__c,Status__c,Purpose__c, Hours_to_Add__c, Date__c, Datetime_Selected__c from Custom_Event__c where Id =: recordId];
+        final Custom_Event__c eventRecord = [Select Id,Timezone_Hours__c,Type_of_Event__c,Time_ZoneStr__c,Status__c,Purpose__c, Hours_to_Add__c, Date__c, Datetime_Selected__c from Custom_Event__c where Id =: recordId WITH SECURITY_ENFORCED];
         final Map<String, String> data = new Map<String, String>();
         if (String.isNotBlank(eventRecord.Datetime_Selected__c)) {
             final Datetime timeSelected = parseTime(eventRecord.Datetime_Selected__c);
@@ -116,18 +116,32 @@ public without sharing class ScheduledEventCalendar_Ctrl {
             final DateTime dateEventUser = dateEvent.addSeconds(parseMilli(offtsettUser));
             final String dateUserStr = dateEventUser.yearGmt() + '/' + (dateEventUser.monthGmt() < 10 ? ('0'+dateEventUser.monthGmt()) : String.valueOf(dateEventUser.monthGmt())) + '/' + (dateEventUser.dayGmt() < 10 ? ('0'+dateEventUser.dayGmt()) : String.valueOf(dateEventUser.dayGmt()));
             final String dateEventStr = dateEventReal.yearGmt() + '/' + (dateEventReal.monthGmt() < 10 ? ('0'+dateEventReal.monthGmt()) : String.valueOf(dateEventReal.monthGmt())) + '/' + (dateEventReal.dayGmt() < 10 ? ('0'+dateEventReal.dayGmt()) : String.valueOf(dateEventReal.dayGmt()));
-            final String timeEventStr = (dateEventReal.hourGmt() < 10 ? ('0'+dateEventReal.hourGmt()) : String.valueOf(dateEventReal.hourGmt())) + ':' + (dateEventReal.minuteGmt() < 10 ? ('0'+dateEventReal.minuteGmt()) : String.valueOf(dateEventReal.minuteGmt()));
-            final String timeUserStr = (dateEventUser.hourGmt() < 10 ? ('0'+dateEventUser.hourGmt()) : String.valueOf(dateEventUser.hourGmt())) + ':' + (dateEventUser.minuteGmt() < 10 ? ('0'+dateEventUser.minuteGmt()) : String.valueOf(dateEventUser.minuteGmt()));
+            Map<String, String> timeValues = setEventTimes(dateEventReal, dateEventUser);
             data.put('dateEvent', String.valueOfGmt(dateEvent));
             data.put('dateUser', String.valueOfGmt(dateEventReal));
             data.put('dateEventDay', dateEventStr);
             data.put('dateEventDayUser', dateUserStr);
-            data.put('hourEvent', timeEventStr);
-            data.put('hourEventUser', timeUserStr);
+            data.put('hourEvent', timeValues.get('timeEventStr'));
+            data.put('hourEventUser', timeValues.get('timeUserStr'));
             data.put('eventTimeZone', eventRecord.Time_ZoneStr__c);
             data.put('eventTimeZoneUser', timezonUser.getDisplayName());
         }
         data.put('status', eventRecord.Status__c);
+        return data;
+    }
+    /**
+    * @description setEventTimes
+    * @author Eduardo Hernandez | 05-24-2023
+    * @param dateEventReal
+    * @param dateEventUser
+    * @return Map<String, String> Map of data values with times formated
+    **/
+    private static Map<String, String> setEventTimes(Datetime dateEventReal, DateTime dateEventUser) {
+        final Map<String, String> data = new Map<String, String>();
+        final String timeEventStr = (dateEventReal.hourGmt() < 10 ? ('0'+dateEventReal.hourGmt()) : String.valueOf(dateEventReal.hourGmt())) + ':' + (dateEventReal.minuteGmt() < 10 ? ('0'+dateEventReal.minuteGmt()) : String.valueOf(dateEventReal.minuteGmt()));
+        final String timeUserStr = (dateEventUser.hourGmt() < 10 ? ('0'+dateEventUser.hourGmt()) : String.valueOf(dateEventUser.hourGmt())) + ':' + (dateEventUser.minuteGmt() < 10 ? ('0'+dateEventUser.minuteGmt()) : String.valueOf(dateEventUser.minuteGmt()));
+        data.put('timeEventStr',timeEventStr);
+        data.put('timeUserStr',timeUserStr);
         return data;
     }
 
